@@ -1,6 +1,8 @@
 __author__ = 'vishal'
 
 from data_fetcher import DataFetcher
+import json
+
 class Handicap(object):
 
     def __init__(self, host, key):
@@ -9,15 +11,17 @@ class Handicap(object):
     def calculate(self, player_name, tour, year, tournament_id):
         differentials = []
         for round in range(1, 6):
-            scorecard = self.data_fetcher.get_scorecards_per_round(tour, year, tournament_id, round)
-            for player in scorecard['round']['players']['items']:
-                if player['first_name']+' '+player['last_name'] == player_name:
-                    gross_score = 0
-                    par = player['course']['par']
-                    for score in player['scores']:
-                        gross_score += score['strokes']
-                    differential = self.handicap_differential(gross_score, 117)
-                    differentials.append(differential)
+            scorecard = json.load(self.data_fetcher.get_scorecards_per_round(tour, year, tournament_id, round))
+            print scorecard
+            if 'round' in scorecard:
+                for player in scorecard['round']['players']:
+                    if player['first_name']+' '+player['last_name'] == player_name:
+                        gross_score = 0
+                        par = player['course']['par']
+                        for score in player['scores']:
+                            gross_score += score['strokes']
+                        differential = self.handicap_differential(gross_score, 117)
+                        differentials.append(differential)
         handicap = self.handicap_index(differentials)
         return handicap
 

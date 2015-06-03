@@ -10,7 +10,7 @@ class Handicap(object):
         differentials = []
         for round in range(1, 6):
             scorecard = self.data_fetcher.get_scorecards_per_round(tour, year, tournament_id, round)
-            for player in scorecard['round']['players']:
+            for player in scorecard['round']['players']['items']:
                 if player['first_name']+' '+player['last_name'] == player_name:
                     gross_score = 0
                     par = player['course']['par']

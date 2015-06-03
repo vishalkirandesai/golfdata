@@ -13,7 +13,8 @@ class Utils(object):
         urllib2.install_opener(self.opener)
 
     def get_request(self, absolute_url):
-        request = urllib2.Request(self.host+"/"+absolute_url+"?api_key="+self.key)
+        print self.host+absolute_url+"?api_key="+self.key
+        request = urllib2.Request(self.host+absolute_url+"?api_key="+self.key)
         request.get_method = lambda : "GET"
         response = self.opener.open(request)
         return response

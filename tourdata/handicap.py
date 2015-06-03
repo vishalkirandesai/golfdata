@@ -8,7 +8,7 @@ class Handicap(object):
     def __init__(self, host, key):
         self.data_fetcher = DataFetcher(host, key)
 
-    def calculate(self, player_name, tour, year, tournament_id):
+    def calculate(self, player_name, tour, year, tournament_id, slope):
         differentials = []
         for round in range(1, 6):
             scorecard = json.load(self.data_fetcher.get_scorecards_per_round(tour, year, tournament_id, round))
@@ -20,10 +20,11 @@ class Handicap(object):
                         par = player['course']['par']
                         for score in player['scores']:
                             gross_score += score['strokes']
-                        differential = self.handicap_differential(gross_score, 117)
+                        differential = self.handicap_differential(gross_score, int(slope))
                         differentials.append(differential)
         handicap = self.handicap_index(differentials)
-        return handicap
+        course_handicap = self.course_handicap(handicap, int(slope))
+        return handicap, course_handicap
 
     def handicap_index(self, differentials):
         count = 0
@@ -36,4 +37,8 @@ class Handicap(object):
     def handicap_differential(self, gross_score, slope_rating):
         differential = (85 - gross_score) * 113 / slope_rating
         return differential
+
+    def course_handicap(self, index, slope):
+        course_handicap = ( index * slope )/113
+        return course_handicap
 
